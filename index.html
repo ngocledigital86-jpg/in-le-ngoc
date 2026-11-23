@@ -1,6 +1,30 @@
 <!doctype html>
 <html lang="vi">
 <head>
+<!-- Xác minh tên miền Meta -->
+<meta name="facebook-domain-verification" content="gt0muiqno6nktfgcl3n0rhwgck1oid" />
+
+<!-- Meta Pixel - IN LÊ NGỌC -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','2607207336452894');
+fbq('track','PageView');
+
+// Đếm khách bấm Gọi / Zalo / Messenger là Contact
+document.addEventListener('click',function(e){
+  var a=e.target.closest('a'); if(!a) return;
+  var h=a.href||'';
+  if(/^tel:|zalo.me|m.me|messenger.com/i.test(h)){
+    fbq('track','Contact',{method:h.split(':')[0].includes('tel')?'phone':(h.includes('zalo')?'zalo':'messenger')});
+  }
+});
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2607207336452894&ev=PageView&noscript=1"/></noscript>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>IN LÊ NGỌC · Xưởng in bao lì xì theo yêu cầu, Tết Đinh Mùi 2027</title>
