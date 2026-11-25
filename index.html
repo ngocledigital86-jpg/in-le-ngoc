@@ -385,6 +385,9 @@ section{padding:clamp(64px,9vw,128px) clamp(16px,4vw,56px);position:relative}
 .pt td:first-child{font-weight:600}
 .pt td b{font:600 19px var(--serif);color:var(--ink)}
 .pt td.na{color:var(--ink-2);font-size:14px}
+.pt td s.old{color:var(--ink-2);font-size:14px;margin-right:6px}
+.pt td b.sale{color:#A3141F}
+.sale-note{margin-top:10px;padding:10px 14px;border-radius:12px;background:#FFF7E6;border:1px solid var(--foil);color:#5A1A10;font-weight:600}
 .pt tr.hot td{background:#FFF7E6}
 .pt tr.hot td:first-child::after{content:"Freeship";margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--foil);color:#3A0A0F;font-size:11px;font-weight:600;vertical-align:2px}
 .pt-other{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px;max-width:1000px}
@@ -766,9 +769,9 @@ h1,h2,h3{line-height:1.15}
     </div>
     <div class="calc-out" aria-live="polite">
       <span class="co-label">Đơn giá</span>
-      <b class="co-unit" id="co-unit">950đ</b>
+      <b class="co-unit" id="co-unit">850đ</b>
       <span class="co-label">Tạm tính</span>
-      <b class="co-total" id="co-total">950.000đ</b>
+      <b class="co-total" id="co-total">850.000đ</b>
       <p class="co-note" id="co-note">Nội thành Hà Nội miễn phí ship, đi tỉnh giảm 50% phí ship.</p>
       <a class="btn btn-gold" id="co-send" href="https://zalo.me/0941892118" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="#i-zalo"/></svg>Gửi báo giá này qua Zalo</a>
       <p class="co-more">C180 nhung, kim tuyến, mỹ thuật: báo giá theo mẫu, nhắn Zalo để có giá trong ngày.</p>
@@ -1006,14 +1009,21 @@ h1,h2,h3{line-height:1.15}
   const NAME_SHORT = (c) => c.replace("Ảnh thật · ", "");
   realMore.onclick = realPage; realPage();
 
+  /* ---------- Ưu đãi C150 đến hết 20/12/2026 (giờ VN). Qua ngày này web tự về giá cũ, không cần sửa. ---------- */
+  const PROMO_END = Date.parse("2026-12-21T00:00:00+07:00"), PROMO_ON = Date.now() < PROMO_END;
+  const C150_BASE = { 500: 1600, 1000: 950, 2000: 850, 3000: 800, 5000: 680, 10000: 580, 20000: 550 };
+  const C150_PROMO = { 1000: 850, 2000: 750, 3000: 700, 5000: 650, 10000: 550 };
+  const C150_NOW = PROMO_ON ? Object.assign({}, C150_BASE, C150_PROMO) : C150_BASE;
+
   /* ---------- Bảng giá ---------- */
   (function () {
     const T = {
-      c150: { 500: 1600, 1000: 950, 2000: 850, 3000: 800, 5000: 680, 10000: 580, 20000: 550 },
+      c150: C150_NOW,
       ep1: { 1000: 1500, 2000: 1300, 3000: 1150, 5000: 1050, 10000: 950 },
       ep2: { 1000: 1900, 2000: 1700, 3000: 1400, 5000: 1200, 10000: 1150 }
     };
-    const cell = (v, k, q) => v ? `<td><b>${fmt(v)}đ</b></td>` : `<td class="na">${k === "ep1" && q === 500 ? "Combo, nhắn Zalo" : "Liên hệ"}</td>`;
+    const cell = (v, k, q) => v ? (k === "c150" && PROMO_ON && C150_PROMO[q] ? `<td><s class="old">${fmt(C150_BASE[q])}đ</s> <b class="sale">${fmt(v)}đ</b></td>` : `<td><b>${fmt(v)}đ</b></td>`) : `<td class="na">${k === "ep1" && q === 500 ? "Combo, nhắn Zalo" : "Liên hệ"}</td>`;
+    if (PROMO_ON) { const n = document.createElement("p"); n.className = "sale-note"; n.textContent = "Ưu đãi C150 cán màng mờ đến hết 20/12/2026: 1.000 chiếc 850đ · 2.000 chiếc 750đ · 3.000 chiếc 700đ · 5.000 chiếc 650đ · 10.000 chiếc 550đ."; $("#gia .sec-head").appendChild(n); }
     $("#pt-body").innerHTML = [500, 1000, 2000, 3000, 5000, 10000, 20000].map((q) =>
       `<tr><td>${fmt(q)} chiếc</td>${["c150", "ep1", "ep2"].map((k) => cell(T[k][q], k, q)).join("")}</tr>`).join("") +
       `<tr><td>Trên 20.000 chiếc</td><td class="na">Liên hệ giá tốt</td><td class="na">Liên hệ</td><td class="na">Liên hệ</td></tr>`;
@@ -1199,12 +1209,12 @@ h1,h2,h3{line-height:1.15}
 
   /* ---------- Tính giá ---------- */
   const LINES = {
-    c150: { name: "C150 cán màng mờ", t: { 500: 1600, 1000: 950, 2000: 850, 3000: 800, 5000: 680, 10000: 580, 20000: 550 } },
+    c150: { name: "C150 cán màng mờ", t: C150_NOW },
     ep1: { name: "Ép nhũ kim 1 mặt", t: { 1000: 1500, 2000: 1300, 3000: 1150, 5000: 1050, 10000: 950 } },
     ep2: { name: "Ép nhũ kim 2 mặt", t: { 1000: 1900, 2000: 1700, 3000: 1400, 5000: 1200, 10000: 1150 } }
   };
   const QTY = [500, 1000, 2000, 3000, 5000, 10000, 20000];
-  let line = "c150", qty = 1000, shownUnit = 950, shownTotal = 950000;
+  let line = "c150", qty = 1000, shownUnit = C150_NOW[1000], shownTotal = C150_NOW[1000] * 1000;
   const segL = el("div", { className: "seg-opts" }), segQ = el("div", { className: "seg-opts" });
   $("#seg-line").appendChild(segL); $("#seg-qty").appendChild(segQ);
   Object.entries(LINES).forEach(([k, v]) => { const b = el("button", { type: "button" }, v.name); b.dataset.k = k; b.onclick = () => { line = k; calc(); }; segL.appendChild(b); });
